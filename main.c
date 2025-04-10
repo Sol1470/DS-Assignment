@@ -68,6 +68,9 @@ void naivePoly(int**arr, int polyNum1, int polyNum2){
     }
     naivePolyAdd(poly1, poly2, resultPoly, arr[0][1], arr[polyNum1][1]);
     writeFileArr(poly1, poly2, resultPoly, sizePoly1, sizePoly2, sizeResultPoly);
+    free(poly1);
+    free(poly2);
+    free(resultPoly);
 }
 void improvedPoly(){
     
@@ -157,6 +160,8 @@ int main() {
     }
 
     naivePoly(arr, polyNum1, polyNum2);
+
+
 
     for (int i = 0; i < sumNum; i++) {
         free(arr[i]);
