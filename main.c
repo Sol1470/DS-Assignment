@@ -9,15 +9,34 @@ void sortArrWithExp(int**arr, int polyNum1, int polyNum2){
     printf("sort in func\n");
 }
 
-void writeFile(){
+void writeFileLinkedList(){
 
 }
+
+void writeFileArr(int* poly1, int* poly2, int* resultPoly, int sizePoly1, int sizePoly2, int sizeResultPoly){
+    FILE* fp = fopen("output.txt","w");
+    for(int i = 0; i < sizePoly1; i++){
+        if(poly1[i] == 0) continue;
+        fprintf(fp,"%dx^%d", poly1[i], sizePoly1 - i - 1);
+        if(i != sizePoly1 - 1) fprintf(fp, " + ");
+        else fprintf(fp,"\n");
+    }
+    for(int i = 0; i < sizePoly2; i++){
+        if(poly2[i] == 0) continue;
+        fprintf(fp,"%dx^%d", poly2[i], sizePoly2 - i - 1);
+        if(i != sizePoly2 - 1) fprintf(fp, " + ");
+        else fprintf(fp,"\n");
+    }
+}
+
 void naivePoly(int**arr, int polyNum1, int polyNum2){
     int sizePoly1 = arr[0][1]+1;
     int sizePoly2 = arr[polyNum1][1]+1;
+    int sizeResultPoly = sizePoly1 > sizePoly2 ? sizePoly1 : sizePoly2;
     int polyindex = 0, arrindex = 0;
     int* poly1 = malloc(sizeof(int)*sizePoly1);
     int* poly2 = malloc(sizeof(int)*sizePoly2);
+    int* resultPoly = malloc(sizeof(int)*sizeResultPoly);
     printf("arr[0][1] = %d, arr[polyNum1][1] = %d\n",arr[0][1], arr[polyNum1][1]);
     for(int i = 0; i < sizePoly1; i++){
         if(arr[arrindex][1] == sizePoly1 - 1 - polyindex){
@@ -47,7 +66,8 @@ void naivePoly(int**arr, int polyNum1, int polyNum2){
     for(int i = 0; i < sizePoly2; i++){
         printf("poly2[%d] = %d\n", i, poly2[i]);
     }
-    naivePolyAdd(poly1, poly2, arr[0][1], arr[polyNum1][1]);
+    naivePolyAdd(poly1, poly2, resultPoly, arr[0][1], arr[polyNum1][1]);
+    writeFileArr(poly1, poly2, resultPoly, sizePoly1, sizePoly2, sizeResultPoly);
 }
 void improvedPoly(){
     
@@ -55,9 +75,8 @@ void improvedPoly(){
 void linkedPoly(){
 
 }
-void naivePolyAdd(int* poly1, int* poly2, int polyNum1, int polyNum2){
+void naivePolyAdd(int* poly1, int* poly2, int* resultPoly, int polyNum1, int polyNum2){
     int sizeResultPoly = (polyNum1 > polyNum2 ? polyNum1 : polyNum2) + 1;
-    int* resultPoly = malloc(sizeof(int)*sizeResultPoly);
     int indexPoly1 = 0, indexPoly2 = 0;
     printf("sizeResultPoly = %d\n", sizeResultPoly);
     printf("polyNum1 = %d, polyNum2 = %d\n", polyNum1, polyNum2);
@@ -89,7 +108,6 @@ void naivePolyAdd(int* poly1, int* poly2, int polyNum1, int polyNum2){
     for(int i = 0; i < sizeResultPoly; i++){
         printf("resultPoly[%d] = %d\n", i, resultPoly[i]);
     }
-    writeFile();
 }
 void improvedPolyAdd(){
     
