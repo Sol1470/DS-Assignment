@@ -55,15 +55,34 @@ void naivePoly(int**arr, int polyNum1, int polyNum2){
         }
         
     }
+
     naivePolyAdd(poly1, poly2, resultPoly, arr[0][1], arr[polyNum1][1]);
     writePoly(poly1, sizePoly1);
     writePoly(poly2, sizePoly2);
+
     free(poly1);
     free(poly2);
     free(resultPoly);
 }
 void improvedPoly(int**arr, int polyNum1, int polyNum2){
-    int startA, finishA, startB, finishB, avail;
+    int startA = 0, finishA = polyNum1 - 1, startB = polyNum1, finishB = polyNum2 - 1, avail = polyNum2;
+    int totalNum = polyNum1 + polyNum2;
+    int**polyArr = malloc(sizeof(int)*2);
+    for(int i = 0; i < 2; i++){
+        polyArr[i] = malloc(sizeof(int)*(totalNum+(polyNum1 > polyNum2 ? polyNum1 + 1 : polyNum2 + 1)));
+    }
+    for(int i = 0; i < 2; i++){
+        for(int j = 0; j < totalNum; j++){
+            polyArr[i][j] = arr[j][i];
+        }
+    }
+    printf("Check PolyArr\n");
+    for(int i = 0; i < 2; i++){
+        for(int j = 0; j < totalNum; j++){
+            printf("%d\t", polyArr[i][j]);
+        }
+        printf("\n");
+    }
     
 }
 void linkedPoly(){
@@ -71,22 +90,12 @@ void linkedPoly(){
 }
 void naivePolyAdd(int* poly1, int* poly2, int* resultPoly, int polyNum1, int polyNum2){
     int sizeResultPoly = (polyNum1 > polyNum2 ? polyNum1 : polyNum2) + 1;
-    int indexPoly1 = 0, indexPoly2 = 0;
+    int sizePoly1 = polyNum1 + 1, sizePoly2 = polyNum2 + 1;
     
     for(int i = 0; i < sizeResultPoly; i++){
-        if(polyNum1 == polyNum2){
-            resultPoly[i] = poly1[indexPoly1++] + poly2[indexPoly2++];
-            polyNum1--;
-            polyNum2--;
-        }
-        else if(polyNum1 > polyNum2){
-            resultPoly[i] = poly1[indexPoly1++];
-            polyNum1--;
-        }
-        else if(polyNum1 < polyNum2--){
-            resultPoly[i] = poly2[indexPoly2++];
-            polyNum2--;
-        }
+        int valuePoly1 = (i < sizePoly1) ? poly1[i] : 0;
+        int valuePoly2 = (i < sizePoly2) ? poly2[i] : 0;
+        resultPoly[i] = valuePoly1 + valuePoly2;
     }
 }
 void improvedPolyAdd(){
@@ -94,6 +103,10 @@ void improvedPolyAdd(){
 }
 void linkedPolyAdd(){
 
+}
+void compare(int a, int b){
+    if(a == b) return 0;
+    else return a < b ? -1 : 1;
 }
 int main() {
     FILE* fp = NULL;
