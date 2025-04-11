@@ -12,15 +12,34 @@ void sortArrWithExp(int**arr, int polyNum1, int polyNum2){
 void writeFileLinkedList(){
 
 }
-void writePoly(int* poly, int size){
-    FILE* fp = fopen("output.txt","w");
+void writeNaivePoly(int* poly, int size){
+    FILE* fp = fopen("output.txt","a");
     for(int i = 0; i < size; i++){
         if(poly[i] == 0) continue;
         
         fprintf(fp, "%dx^%d", poly[i], size - i - 1);
 
-        if(i != size - 1) fprintf(fp, " + ");
-        else fprintf(fp, "\n");
+        if(i == size - 1) fprintf(fp, "\n");
+        else fprintf(fp, " + ");
+    }
+    fclose(fp);
+}
+void writeImprovedPoly(int**poly, int startA, int startB, int finishA, int finishB, int startC, int finishC){
+    FILE* fp = fopen("output.txt", "a");
+    for(int i = startA; i < finishA + 1; i++){
+        fprintf(fp, "%dx^%d", poly[0][i], poly[1][i]);
+        if(i == finishA) fprintf(fp, "\n");
+        else fprintf(fp, " + ");
+    }
+    for(int i = startB; i < finishB + 1; i++){
+        fprintf(fp, "%dx^%d", poly[0][i], poly[1][i]);
+        if(i == finishB) fprintf(fp, "\n");
+        else fprintf(fp, " + ");
+    }
+    for(int i = startC; i < finishC + 1; i++){
+        fprintf(fp, "%dx^%d", poly[0][i], poly[1][i]);
+        if(i == finishC) fprintf(fp, "\n");
+        else fprintf(fp, " + ");
     }
 }
 void naivePoly(int**arr, int polyNum1, int polyNum2){
@@ -57,19 +76,27 @@ void naivePoly(int**arr, int polyNum1, int polyNum2){
     }
 
     naivePolyAdd(poly1, poly2, resultPoly, arr[0][1], arr[polyNum1][1]);
-    writePoly(poly1, sizePoly1);
-    writePoly(poly2, sizePoly2);
-
+    writeNaivePoly(poly1, sizePoly1);
+    writeNaivePoly(poly2, sizePoly2);
+    writeNaivePoly(resultPoly, sizeResultPoly);
     free(poly1);
     free(poly2);
     free(resultPoly);
 }
 void improvedPoly(int**arr, int polyNum1, int polyNum2){
-    int startA = 0, finishA = polyNum1 - 1, startB = polyNum1, finishB = polyNum2 - 1, avail = polyNum2;
+    int startA = 0;
+    int finishA = startA + polyNum1 - 1;
+    int startB = finishA + 1;
+    int finishB = startB + polyNum2 - 1;
+    int avail = finishB + 1;
     int totalNum = polyNum1 + polyNum2;
+    int finishC = totalNum + (polyNum1 > polyNum2 ? polyNum1 : polyNum2);
     int**polyArr = malloc(sizeof(int)*2);
+
+    printf("startA : %d, startB : %d\nfinishA : %d, finishB : %d\navail : %d\n", startA, startB, finishA, finishB, avail);
+
     for(int i = 0; i < 2; i++){
-        polyArr[i] = malloc(sizeof(int)*(totalNum+(polyNum1 > polyNum2 ? polyNum1 + 1 : polyNum2 + 1)));
+        polyArr[i] = malloc(sizeof(int)*finishC);
     }
     for(int i = 0; i < 2; i++){
         for(int j = 0; j < totalNum; j++){
@@ -83,22 +110,61 @@ void improvedPoly(int**arr, int polyNum1, int polyNum2){
         }
         printf("\n");
     }
-    
+    improvedPolyAdd(polyArr, startA, startB, finishA, finishB, avail);
+    for(int i = 0; i < 2; i++){
+        for(int j = 0; j < finishC; j++){
+            printf("%d\t", polyArr[i][j]);
+        }
+        printf("\n");
+    }
+    writeImprovedPoly(polyArr, startA, startB, finishA, finishB, avail, finishC);
 }
 void linkedPoly(){
 
 }
 void naivePolyAdd(int* poly1, int* poly2, int* resultPoly, int polyNum1, int polyNum2){
     int sizeResultPoly = (polyNum1 > polyNum2 ? polyNum1 : polyNum2) + 1;
-    int sizePoly1 = polyNum1 + 1, sizePoly2 = polyNum2 + 1;
+    int indexPoly1 = 0, indexPoly2 = 0;
     
     for(int i = 0; i < sizeResultPoly; i++){
-        int valuePoly1 = (i < sizePoly1) ? poly1[i] : 0;
-        int valuePoly2 = (i < sizePoly2) ? poly2[i] : 0;
-        resultPoly[i] = valuePoly1 + valuePoly2;
+        if(polyNum1 == polyNum2){
+            resultPoly[i] = poly1[indexPoly1++] + poly2[indexPoly2++];
+            polyNum1--;
+            polyNum2--;
+        }
+        else if(polyNum1 > polyNum2){
+            resultPoly[i] = poly1[indexPoly1++];
+            polyNum1--;
+        }
+        else if(polyNum1 < polyNum2--){
+            resultPoly[i] = poly2[indexPoly2++];
+            polyNum2--;
+        }
     }
 }
-void improvedPolyAdd(){
+
+void improvedPolyAdd(int**polyArr, int startA, int startB, int finishA, int finishB, int avail){
+    while(startA <= finishA && startB <= finishB){
+        if(polyArr[1][startA] < polyArr[1][startB]){
+            polyArr[0][avail] = polyArr[0][startB];
+            polyArr[1][avail] = polyArr[1][startB];
+            startB++;
+            avail++;
+        }
+        else if(polyArr[1][startA] == polyArr[1][startB]){
+            polyArr[0][avail] = polyArr[0][startA] + polyArr[0][startB];
+            polyArr[1][avail] = polyArr[1][startA];
+            startA++;
+            startB++;
+            avail++;
+        }
+        else{
+            polyArr[0][avail] = polyArr[0][startA];
+            polyArr[1][avail] = polyArr[1][startA];
+            startA++;
+            avail++;
+        }
+    }
     
 }
 void linkedPolyAdd(){
@@ -106,13 +172,22 @@ void linkedPolyAdd(){
 }
 int main() {
     FILE* fp = NULL;
+    FILE* fp2 = NULL;
     fp = fopen("input.txt","r");
     if(fp == NULL){
         printf("File open ERROR\n");
         return 0;
     }
-    int polyNum1, polyNum2; //다항식의 항의 갯수
-    int** arr = NULL; //input.txt에서 데이터를 가져오는 포인터
+
+    fp2 = fopen("output.txt","w");
+    if(fp2 == NULL){
+        printf("File open ERROR\n");
+        return 0;
+    }
+    fclose(fp2);
+
+    int polyNum1, polyNum2;
+    int** arr = NULL;
     int sumNum = 0;
     int i, j;
 
