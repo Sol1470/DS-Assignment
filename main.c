@@ -104,10 +104,6 @@ void improvedPolyAdd(){
 void linkedPolyAdd(){
 
 }
-void compare(int a, int b){
-    if(a == b) return 0;
-    else return a < b ? -1 : 1;
-}
 int main() {
     FILE* fp = NULL;
     fp = fopen("input.txt","r");
