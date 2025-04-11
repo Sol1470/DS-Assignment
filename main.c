@@ -12,23 +12,17 @@ void sortArrWithExp(int**arr, int polyNum1, int polyNum2){
 void writeFileLinkedList(){
 
 }
-
-void writeFileArr(int* poly1, int* poly2, int* resultPoly, int sizePoly1, int sizePoly2, int sizeResultPoly){
+void writePoly(int* poly, int size){
     FILE* fp = fopen("output.txt","w");
-    for(int i = 0; i < sizePoly1; i++){
-        if(poly1[i] == 0) continue;
-        fprintf(fp,"%dx^%d", poly1[i], sizePoly1 - i - 1);
-        if(i != sizePoly1 - 1) fprintf(fp, " + ");
-        else fprintf(fp,"\n");
-    }
-    for(int i = 0; i < sizePoly2; i++){
-        if(poly2[i] == 0) continue;
-        fprintf(fp,"%dx^%d", poly2[i], sizePoly2 - i - 1);
-        if(i != sizePoly2 - 1) fprintf(fp, " + ");
-        else fprintf(fp,"\n");
+    for(int i = 0; i < size; i++){
+        if(poly[i] == 0) continue;
+        
+        fprintf(fp, "%dx^%d", poly[i], size - i - 1);
+
+        if(i != size - 1) fprintf(fp, " + ");
+        else fprintf(fp, "\n");
     }
 }
-
 void naivePoly(int**arr, int polyNum1, int polyNum2){
     int sizePoly1 = arr[0][1]+1;
     int sizePoly2 = arr[polyNum1][1]+1;
@@ -37,7 +31,7 @@ void naivePoly(int**arr, int polyNum1, int polyNum2){
     int* poly1 = malloc(sizeof(int)*sizePoly1);
     int* poly2 = malloc(sizeof(int)*sizePoly2);
     int* resultPoly = malloc(sizeof(int)*sizeResultPoly);
-    printf("arr[0][1] = %d, arr[polyNum1][1] = %d\n",arr[0][1], arr[polyNum1][1]);
+
     for(int i = 0; i < sizePoly1; i++){
         if(arr[arrindex][1] == sizePoly1 - 1 - polyindex){
             poly1[polyindex++] = arr[arrindex++][0];
@@ -46,9 +40,11 @@ void naivePoly(int**arr, int polyNum1, int polyNum2){
             poly1[polyindex++] = 0;
             continue;
         }
-        printf("arr[%d][1] = %d, sizePoly1 - temp = %d\n", i, arr[arrindex - 1][1], sizePoly1 - polyindex);
+        
     }
+
     polyindex = 0;
+
     for(int i = 0; i < sizePoly2; i++){
         if(arr[arrindex][1] == sizePoly2 - 1 - polyindex){
             poly2[polyindex++] = arr[arrindex++][0];
@@ -57,22 +53,17 @@ void naivePoly(int**arr, int polyNum1, int polyNum2){
             poly2[polyindex++] = 0;
             continue;
         }
-        printf("arr[%d][1] = %d, sizePoly2 - temp = %d\n", i, arr[arrindex - 1][1], sizePoly2 - polyindex);
-    }
-    printf("naive poly check:\n");
-    for(int i = 0; i < sizePoly1; i++){
-        printf("poly1[%d] = %d\n", i, poly1[i]);
-    }
-    for(int i = 0; i < sizePoly2; i++){
-        printf("poly2[%d] = %d\n", i, poly2[i]);
+        
     }
     naivePolyAdd(poly1, poly2, resultPoly, arr[0][1], arr[polyNum1][1]);
-    writeFileArr(poly1, poly2, resultPoly, sizePoly1, sizePoly2, sizeResultPoly);
+    writePoly(poly1, sizePoly1);
+    writePoly(poly2, sizePoly2);
     free(poly1);
     free(poly2);
     free(resultPoly);
 }
-void improvedPoly(){
+void improvedPoly(int**arr, int polyNum1, int polyNum2){
+    int startA, finishA, startB, finishB, avail;
     
 }
 void linkedPoly(){
@@ -81,16 +72,6 @@ void linkedPoly(){
 void naivePolyAdd(int* poly1, int* poly2, int* resultPoly, int polyNum1, int polyNum2){
     int sizeResultPoly = (polyNum1 > polyNum2 ? polyNum1 : polyNum2) + 1;
     int indexPoly1 = 0, indexPoly2 = 0;
-    printf("sizeResultPoly = %d\n", sizeResultPoly);
-    printf("polyNum1 = %d, polyNum2 = %d\n", polyNum1, polyNum2);
-    printf("poly1 value: \n");
-    for(int i = 0; i < polyNum1+1; i++){
-        printf("poly1[%d] = %d\n",i ,poly1[i]);
-    }
-    printf("poly2 value:\n");
-    for(int i = 0; i < polyNum2+1; i++){
-        printf("poly2[%d] = %d\n",i ,poly2[i]);
-    }
     
     for(int i = 0; i < sizeResultPoly; i++){
         if(polyNum1 == polyNum2){
@@ -106,10 +87,6 @@ void naivePolyAdd(int* poly1, int* poly2, int* resultPoly, int polyNum1, int pol
             resultPoly[i] = poly2[indexPoly2++];
             polyNum2--;
         }
-    }
-    printf("Result : \n");
-    for(int i = 0; i < sizeResultPoly; i++){
-        printf("resultPoly[%d] = %d\n", i, resultPoly[i]);
     }
 }
 void improvedPolyAdd(){
@@ -131,19 +108,16 @@ int main() {
     int i, j;
 
     fscanf(fp,"%d\t%d",&polyNum1, &polyNum2);
-    printf("read txt n1 = %d, n2 = %d\n", polyNum1, polyNum2);
     sumNum = polyNum1 + polyNum2;
     
     arr = malloc(sizeof(int*)*sumNum);
     for(int i = 0; i < sumNum; i++){
         arr[i]=malloc(sizeof(int)*2);
     }
-    printf("malloc arr\n");
     for(int i = 0; i < sumNum; i++){
         fscanf(fp,"%d\t%d", &arr[i][0], &arr[i][1]);
     }
     fclose(fp);
-    printf("read txt all and fclose fp\n");
 
     printf("before sort:\n");
     for (int i = 0; i < sumNum; i++) {
@@ -152,15 +126,13 @@ int main() {
 
     sortArrWithExp(arr, polyNum1, polyNum2);
 
-    printf("sort\n");
-
     printf("result:\n");
     for (int i = 0; i < sumNum; i++) {
         printf("arr[%d] = %d\t%d\n", i, arr[i][0], arr[i][1]);
     }
 
     naivePoly(arr, polyNum1, polyNum2);
-
+    improvedPoly(arr, polyNum1, polyNum2);
 
 
     for (int i = 0; i < sumNum; i++) {
